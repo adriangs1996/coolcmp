@@ -35,7 +35,7 @@ def build_ll1_parser(G: Grammar):
             sym = stack.pop()
             if sym.IsTerminal:
                 assert sym == w[cursor].token_type, "La cadena no pertenece al lenguaje"
-                cursor+=1
+                cursor += 1
             else:
                 try:
                     production = table[(sym,w[cursor].token_type)]
@@ -47,7 +47,7 @@ def build_ll1_parser(G: Grammar):
                         pass
                 except KeyError:
                     raise Exception('La cadena no pertenece al lenguaje')
-        
+
         assert w[cursor].token_type == G.EOF, 'La cadena no pertenece al lenguaje'
         return output
 

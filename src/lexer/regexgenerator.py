@@ -12,7 +12,6 @@ from tools.dtbuilder import build_derivation_tree
 from automatons.state import State
 
 #%%
-printer = get_printer(AtomicNode=AtomicNode, UnaryNode=UnaryNode, BinaryNode=BinaryNode)
 
 class EpsilonNode(AtomicNode):
     def evaluate(self):
@@ -79,40 +78,43 @@ class QuestionNode(UnaryNode):
 #%%
 class Regex(object):
 
-    def __init__(self, regex, ignore_white_space = True):
+    def __init__(self, regex, ignore_white_space=True):
         self.regex = regex
         self.G = Grammar()
         E = self.G.NonTerminal('E', True)
         T, F, A, X, Y, Z = self.G.NonTerminals('T F A X Y Z')
-        pipe, star, opar, cpar, symbol, epsilon,plus, minus, obrack, cbrack, question = self.G.Terminals('| * ( ) symbol ε + - [ ] ?')
+        pipe, star, opar, cpar, symbol, epsilon, plus, minus, obrack, cbrack, question = self.G.Terminals('| * ( ) symbol ε + - [ ] ?')
 
-        E %= T + X,lambda h,s:s[2], None, lambda h,s:s[1]
-        X %= pipe + E, lambda h,s:UnionNode(h[0],s[2])
-        X %= self.G.Epsilon,lambda h,s:h[0]
-        T %= F + Y, lambda h,s:s[2], None, lambda h,s:s[1]
-        Y %= T, lambda h,s:ConcatNode(h[0],s[1])
-        Y %= self.G.Epsilon, lambda h,s:h[0]
-        F %= A + Z, lambda h,s:s[2], None, lambda h,s:s[1]
-        Z %= star, lambda h,s:ClosureNode(h[0])
-        Z %= plus, lambda h,s:PositiveClosureNode(h[0])
-        Z %= question, lambda h,s: QuestionNode(h[0])
-        Z %= self.G.Epsilon, lambda h,s:h[0]
-        A %= symbol, lambda h,s:SymbolNode(s[1])
-        A %= epsilon, lambda h,s:EpsilonNode(s[1])
-        A %= opar + E + cpar, lambda h,s:s[2]
+        E %= T + X, lambda h, s: s[2], None, lambda h, s: s[1]
+        X %= pipe + E, lambda h, s: UnionNode(h[0], s[2])
+        X %= self.G.Epsilon, lambda h, s:h[0]
+        T %= F + Y, lambda h, s: s[2], None, lambda h, s: s[1]
+        Y %= T, lambda h, s: ConcatNode(h[0], s[1])
+        Y %= self.G.Epsilon, lambda h, s:h[0]
+        F %= A + Z, lambda h, s: s[2], None, lambda h, s: s[1]
+        Z %= star, lambda h, s: ClosureNode(h[0])
+        Z %= plus, lambda h, s: PositiveClosureNode(h[0])
+        Z %= question, lambda h, s: QuestionNode(h[0])
+        Z %= self.G.Epsilon, lambda h, s: h[0]
+        A %= symbol, lambda h, s: SymbolNode(s[1])
+        A %= epsilon, lambda h, s: EpsilonNode(s[1])
+        A %= opar + E + cpar, lambda h, s: s[2]
 
         self.automaton = self._build_automaton(regex, ignore_white_space)
 
-    def _build_automaton(self,regex, ignore_white_space):
+    def _build_automaton(self, regex, ignore_white_space):
 
         def regex_tokenizer(regex, ignore_white_space):
             d = {term.Name: term for term in self.G.terminals}
             tokens = []
             symbol_term = [term for term in self.G.terminals if term.Name == 'symbol'][0]
-            fixed_tokens = {tok.Name:Token(tok.Name,tok) for tok in [d['|'],d['*'],d['+'],d['?'],d['('],d[')'],
-                                                            d['['],d[']'],d['-'],d['ε']]}
+            fixed_tokens = {tok.Name:Token(tok.Name, tok) for tok in [d['|'], d['*'],
+                                                                      d['+'], d['?'],
+                                                                      d['('], d[')'],
+                                                                      d['['], d[']'],
+                                                                      d['-'], d['ε']]}
 
-            for i,c in enumerate(regex):
+            for i, c in enumerate(regex):
                 if c == '@' or (ignore_white_space and c.isspace()):
                     continue
                 try:
@@ -122,7 +124,7 @@ class Regex(object):
                 except KeyError:
                     token = Token(c, symbol_term)
                 tokens.append(token)
-            tokens.append(Token('$',self.G.EOF))
+            tokens.append(Token('$', self.G.EOF))
             return tokens
 
         toks = regex_tokenizer(regex, ignore_white_space)
@@ -133,6 +135,5 @@ class Regex(object):
         automaton = nfa_to_deterministic(automatom)
         return automaton
 
-    def __call__(self, w:str):
+    def __call__(self, w: str):
         return self.automaton.recognize(w)
-

@@ -21,15 +21,15 @@ def build_cool_grammar():
     if_, then, else_,assign, new = G.Terminals('if then else assign new')
     gt, lt , ge, le, eq, not_ = G.Terminals('> < >= <= == !')
     while_, do = G.Terminals('while do')
-    
+
     program %= class_list, lambda s: ProgramNode(s[1])
-    
+
     class_list %= class_def, lambda s: [s[1]]
     class_list %= class_def + class_list, lambda s: [s[1]] + s[2]
-    
+
     class_def %= class_keyword + idx + obrack + feature_list + cbrack, lambda s: ClassDef(s[2],s[4])
     class_def %= class_keyword + idx + dd + typex + obrack + feature_list + cbrack, lambda s: ClassDef(s[2],s[6],s[4])
-    
+
     feature_list %= meod_def, lambda s: [s[1]]
     feature_list %= attr_def, lambda s: [s[1]]
     feature_list %= meod_def + feature_list, lambda s: [s[1]] + s[2]
@@ -122,23 +122,22 @@ def build_cool_grammar():
               (le, '<='),
               (eq, '=='),
               (not_, '@!'),
-              (equal,'='),
-              (opar,'@('),
-              (cpar,'@)'),
-              (obrack,'@{'),
-              (cbrack,'@}'),
-              (plus,'@+'),
-              (minus,'@-'),
-              (div,'/'),
-              (star,'@*'),
-              (let,'let'),
-              (idx,'(A|a|B|b|C|c|D|d|E|e|F|f|G|g|H|h|I|i|J|j|K|k|L|l|M|m|N|n|O|o|P|p|Q|q|R|r|S|s|T|t|u|U|V|v|W|w|X|x|Y|y|Z|z)+'),
-              (num,'0|(1|2|3|4|5|6|7|8|9)(1|2|3|4|5|6|7|8|9|0)*'),
-              (string_const,"@'(A|a|B|b|C|c|D|d|E|e|F|f|G|g|H|h|I|i|J|j|K|k|L|l|M|m|N|n|O|o|P|p|Q|q|R|r|S|s|T|t|u|U|V|v|W|w|X|x|Y|y|Z|z)+@'")
+              (equal, '='),
+              (opar, '@('),
+              (cpar, '@)'),
+              (obrack, '@{'),
+              (cbrack, '@}'),
+              (plus, '@+'),
+              (minus, '@-'),
+              (div, '/'),
+              (star, '@*'),
+              (let, 'let'),
+              (idx, '(A|a|B|b|C|c|D|d|E|e|F|f|G|g|H|h|I|i|J|j|K|k|L|l|M|m|N|n|O|o|P|p|Q|q|R|r|S|s|T|t|u|U|V|v|W|w|X|x|Y|y|Z|z)+'),
+              (num, '0|(1|2|3|4|5|6|7|8|9)(1|2|3|4|5|6|7|8|9|0)*'),
+              (string_const, "@'(A|a|B|b|C|c|D|d|E|e|F|f|G|g|H|h|I|i|J|j|K|k|L|l|M|m|N|n|O|o|P|p|Q|q|R|r|S|s|T|t|u|U|V|v|W|w|X|x|Y|y|Z|z)+@'")
               ]
-    
-    lexer = Lexer(table,G.EOF, ignore_white_space=True)
+
+    lexer = Lexer(table, G.EOF, ignore_white_space=False)
     return G, lexer
-    
-    
-    
+
+
