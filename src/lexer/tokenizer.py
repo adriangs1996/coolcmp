@@ -40,7 +40,7 @@ class Lexer:
                 if state.final:
                     state.tag = (n,token_type)
             regexs.append(start)
- 
+
         return regexs
 
     def _build_automaton(self):
@@ -88,7 +88,7 @@ class Lexer:
                             n = priority
                             token_type = tt
                     except TypeError:
-                        pass      
+                        pass
                 yield lex, token_type
                 if string != lex:
                     text.insert(0,string[len(lex):])
