@@ -173,7 +173,7 @@ class LR1Parser(ShiftReduceParser):
                             self._register(self.action,(idx,next_symbol),('SHIFT',next_state.idx))
                     except KeyError:
                         pass
-        
+
     @staticmethod
     def _register(table, key, value):
         # assert key not in table or table[key] == value, f'Shift-Reduce or Reduce-Reduce conflict!!!\n tried to put {value} in {key} already exist with value  {table[key]}'
