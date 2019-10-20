@@ -10,7 +10,6 @@ from abstract.tree import NotNode, WhileBlockNode, EqualToNode, InstantiateClass
 from abstract.tree import ActionNode, CaseNode, ParentFuncCall, BlockNode, IsVoidNode
 from lexer.tokenizer import Lexer
 
-# TODO: Agregar el case
 def build_cool_grammar():
     G = Grammar()
     program = G.NonTerminal('<program>', True)
@@ -74,14 +73,14 @@ def build_cool_grammar():
     feature_list %= attr_def + dot_comma +feature_list, lambda s: [s[1]] + s[3]
 
     # Definir la estructura de la declaracion de un metodo.
-    meod_def %= def_keyword + idx + opar + param_list_empty + cpar + dd + typex + obrack +\
-                statement_list + cbrack, lambda s: MethodDef(s[2], s[4], s[7], s[9])
+    meod_def %= idx + opar + param_list_empty + cpar + dd + typex + obrack +\
+                statement_list + cbrack, lambda s: MethodDef(s[1], s[3], s[6], s[8])
 
     # Definir la estructura de la declaracion de un atributo.
-    attr_def %= idx + dd + typex + dot_comma, lambda s: AttributeDef(s[1],s[3])
+    attr_def %= idx + dd + typex, lambda s: AttributeDef(s[1],s[3])
 
     # Definir la estructura de la declaracion de un atributo con valor por defecto.
-    attr_def %= idx + dd + typex + equal + exp + dot_comma, lambda s: AttributeDef(s[1], s[3], s[5])
+    attr_def %= idx + dd + typex + assign + exp, lambda s: AttributeDef(s[1], s[3], s[5])
 
     # Definir la lista de parametros como una lista de parametros o una lista vacia
     param_list_empty %= param_list, lambda s: s[1]
@@ -97,7 +96,7 @@ def build_cool_grammar():
 
     # Definir una lista de sentencias como una expresion terminada en punto y coma o
     # una expresion y una lista de sentencias separadas por punto y coma.
-    statement_list %= exp, lambda s: [s[1]]
+    statement_list %= exp + dot_comma, lambda s: [s[1]]
 
     statement_list %= exp + dot_comma + statement_list, lambda s: [s[1]] + s[3]
 
@@ -238,6 +237,7 @@ def build_cool_grammar():
              (esac, 'esac'),
              (case, 'case'),
              (of, 'of'),
+             (inherits, 'inherits'),
              (coma, ','),
              (period, '.'),
              (dd, ':'),
