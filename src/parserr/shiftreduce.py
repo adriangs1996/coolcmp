@@ -1,3 +1,9 @@
+'''
+Este modulo contiene la declaracion de la clase ShiftReduceParser, la cual
+sirve de base para los parsers SLR, LALR y LR
+'''
+from grammar.grammar import AttributeProduction
+
 class ShiftReduceParser:
     """
     Clase base para los parsers SLR(1), LALR(1) y LR(1).
@@ -19,28 +25,32 @@ class ShiftReduceParser:
     def _build_parsing_table(self):
         raise NotImplementedError()
 
-    def __call__(self, w):
-        stack = [ 0 ]
+    def __call__(self, tokens):
+        stack = [0]
         cursor = 0
         output = []
 
         while True:
             state = stack[-1]
-            lookahead = w[cursor].token_type
+            lookahead = tokens[cursor].token_type
             try:
                 action, tag = self.action[state, lookahead]
             except KeyError:
-                raise SyntaxError(f'Unexpected Token {w[cursor]} in line {w[cursor].token_line} column {w[cursor].token_column}.\n'+
-                                  f'Expected: ' + ' or '.join([str(y) for x,y in self.action if x == state]))
+                print(lookahead.__class__)
+                raise SyntaxError(f'Bad {tokens[cursor]} in line {tokens[cursor].token_line}'+
+                                  f' column {tokens[cursor].token_column}.\n'+
+                                  f'Expected: ' +
+                                  ' or '.join([str(y) for x,y in self.action if x == state]))
+
             if action == self.SHIFT:
                 cursor += 1
                 stack.append(tag)
 
             elif action == self.REDUCE:
-                head, body = tag  #Separar la cabecera de la produccion, tag devuelve la produciion si la accion es Rk
+                head, body = tag
 
                 for _ in range(len(body)):
-                    stack.pop() #Consumir todos los elementos de la pila que correspondan a la produccion
+                    stack.pop()
 
                 output.append(tag)
                 new_state = self.goto[stack[-1], head]
@@ -52,3 +62,24 @@ class ShiftReduceParser:
 
             else:
                 raise Exception('La cadena no pertenece al lenguaje')
+
+    def dumps_parser_state(self):
+        '''
+        Devuelve un formato objeto de tipo bytes (o string)
+        que sirve para guardar el estado del parser en un fichero
+        para cargarlo posteriormente con load.
+        '''
+        try:
+            import cloudpickle
+        except ImportError:
+            return None
+
+        return cloudpickle.dumps(self)
+
+    @staticmethod
+    def load_parser_state(data):
+        try:
+            import cloudpickle as pickle
+            return pickle.loads(data)
+        except ImportError:
+            return None

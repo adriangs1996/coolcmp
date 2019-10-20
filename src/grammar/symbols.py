@@ -60,8 +60,8 @@ class Terminal(Symbol):
     Los terminales no deben ser instanciados directamente con la aplicación de su constructor.
     """
 
-    def __init__(self,name,grammar):
-        super().__init__(name,grammar)
+    def __init__(self,name, grammar):
+        super().__init__(name, grammar)
 
     @property
     def IsTerminal(self):
@@ -74,6 +74,12 @@ class Terminal(Symbol):
     @property
     def IsEpsilon(self):
         return False
+
+    def __hash__(self):
+        return hash(self.Name)
+
+    def __eq__(self, other):
+        return isinstance(other, Terminal) and other.Name == self.Name
 
 
 class NonTerminal(Symbol):
@@ -99,7 +105,7 @@ class NonTerminal(Symbol):
             p=Production(self,other)
             self.Grammar.Add_Production(p)
             return self
-        
+
         if isinstance(other, SentenceList):
 
             for s in other:
@@ -253,16 +259,16 @@ class SentenceList(object):
     def __iter__(self):
         return iter(self._sentences)
 
-    def __or__(self,other):
-        if isinstance(other,Sentence):
+    def __or__(self, other):
+        if isinstance(other, Sentence):
             self.Add(other)
             return self
 
-        if isinstance(other,Symbol):
+        if isinstance(other, Symbol):
             return self|Sentence(other)
 
 
-class Epsilon(Terminal,Sentence):
+class Epsilon(Terminal, Sentence):
     """
     Modelaremos tanto la cadena vacía como el símbolo que la representa: epsilon (ϵ),
     en la misma clase: Epsilon.
@@ -331,7 +337,7 @@ class Production(object):
       S %= S + a | G.Epsilon
     """
 
-    def __init__(self,nonTerminal,sentence):
+    def __init__(self, nonTerminal, sentence):
         self.Left=nonTerminal
         self.Right=sentence
 
@@ -415,18 +421,18 @@ class AttributeProduction(Production):
 
     """
 
-    def __init__(self,nonTerminal,sentence,attributes):
-        if not isinstance(sentence,Sentence) and isinstance(sentence,Symbol):
-            sentence=Sentence(sentence)
-        super(AttributeProduction,self).__init__(nonTerminal,sentence)
+    def __init__(self,nonTerminal, sentence, attributes):
+        if not isinstance(sentence, Sentence) and isinstance(sentence, Symbol):
+            sentence = Sentence(sentence)
+        super(AttributeProduction, self).__init__(nonTerminal, sentence)
 
-        self.attributes=attributes
+        self.attributes = attributes
 
     def __str__(self):
-        return '%s := %s'%(self.Left,self.Right)
+        return '%s := %s'%(self.Left, self.Right)
 
     def __repr__(self):
-        return '%s -> %s'%(self.Left,self.Right)
+        return '%s -> %s'%(self.Left, self.Right)
 
     def __iter__(self):
         yield self.Left
