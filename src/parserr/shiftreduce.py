@@ -3,7 +3,7 @@ class ShiftReduceParser:
     Clase base para los parsers SLR(1), LALR(1) y LR(1).
     No se debe instanciar directamente, en vez de eso, todo parser
     cuyo funcionamiento se base en las acciones shift reduce deben heredar
-    de esta clase e implementar el metodo build_parsing_table.    
+    de esta clase e implementar el metodo build_parsing_table.
     """
     SHIFT = 'SHIFT'
     REDUCE = 'REDUCE'
@@ -30,7 +30,8 @@ class ShiftReduceParser:
             try:
                 action, tag = self.action[state, lookahead]
             except KeyError:
-                raise SyntaxError(f'Unexpected Token {w[cursor].lex} in line {w[cursor].token_line} column {w[cursor].token_column}')
+                raise SyntaxError(f'Unexpected Token {w[cursor]} in line {w[cursor].token_line} column {w[cursor].token_column}.\n'+
+                                  f'Expected: ' + ' or '.join([str(y) for x,y in self.action if x == state]))
             if action == self.SHIFT:
                 cursor += 1
                 stack.append(tag)

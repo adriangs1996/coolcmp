@@ -115,11 +115,12 @@ class Regex(object):
                                                                       d['-'], d['ε']]}
 
             for i, c in enumerate(regex):
-                if c == '@' or (ignore_white_space and c.isspace()):
+                if c == "\\"  or \
+                   (ignore_white_space and c.isspace()):
                     continue
                 try:
                     token = fixed_tokens[c]
-                    if regex[i-1] == '@':
+                    if regex[i-1] == '\\':
                         raise KeyError
                 except KeyError:
                     token = Token(c, symbol_term)

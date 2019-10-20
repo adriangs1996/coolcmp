@@ -197,19 +197,19 @@ class LALRParser(ShiftReduceParser):
             for item in node.state:
                 if item.IsReduceItem:
                     if item.production.Left == G.startSymbol:
-                        register(self.action,(idx,G.EOF),('OK',item.production))
+                        register(self.action, (idx, G.EOF), ('OK', item.production))
                     else:
                         for lookahead in item.lookaheads:
-                            register(self.action,(idx,lookahead),('REDUCE',item.production))
+                            register(self.action, (idx, lookahead), ('REDUCE', item.production))
                 else:
                     next_symbol = item.NextSymbol
                     try:
                         if next_symbol.IsNonTerminal:
                             next_state = node.transitions[next_symbol.Name][0]
-                            register(self.goto,(idx,next_symbol),next_state.idx)
+                            register(self.goto, (idx, next_symbol), next_state.idx)
                         else:
                             next_state = node.transitions[next_symbol.Name][0]
-                            register(self.action,(idx,next_symbol),('SHIFT',next_state.idx))
+                            register(self.action, (idx, next_symbol), ('SHIFT', next_state.idx))
                     except KeyError:
                         pass
 
